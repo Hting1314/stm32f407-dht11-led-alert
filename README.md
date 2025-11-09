@@ -1,2 +1,52 @@
-# stm32f407-dht11-led-alert
-STM32F407 DHT11 temperature &amp; humidity monitor with LED alert and USART1 logging.
+# STM32F407 DHT11 LED Alert
+
+## 项目简介
+
+本项目基于 **STM32F407ZGT6** 开发板，演示从基础外设到简单告警逻辑的完整工程化流程，包括：
+
+- DHT11 温湿度采集
+- USART1 串口输出调试与数据上报
+- 按键切换 LED 显示模式
+- 简单告警逻辑（温湿度阈值触发 LED 快闪）
+- 模块化工程结构与 BSP 分层设计，为后续引入 FreeRTOS 做准备
+
+## 硬件假设
+
+- 核心板：STM32F407ZGT6
+- LED：PG13 / PG14
+- 按键：KEY0 → PF6（外部中断）
+- DHT11：PB11
+- 串口：USART1
+  - TX: PA9
+  - RX: PA10
+  - 通过 USB-TTL 转串口连接到 PC 串口调试工具
+
+## 功能要求（V1 版本）
+
+1. 使用 DHT11 周期性采集温湿度数据。
+2. 通过 USART1 以固定周期输出温湿度数据到上位机串口工具。
+3. 使用按键（KEY0 / PF6）切换 LED 显示模式（循环切换）：
+   - 模式 1：LED 常灭
+   - 模式 2：LED 常亮
+   - 模式 3：LED 慢闪
+   - 模式 4：告警模式：
+     - 当温度 > 30℃ 或 湿度 > 80% 时，LED 快闪
+4. 工程采用模块化与 BSP 分层结构，核心目录划分示例：
+   - `Core/`：启动文件、系统时钟、主函数等
+   - `Drivers/`：HAL 库及官方驱动
+   - `BSP/`：
+     - `bsp_led.c/h`
+     - `bsp_key.c/h`
+     - `bsp_dht11.c/h`
+     - `bsp_usart.c/h`
+   - `User/`：
+     - 应用层逻辑（模式状态机、告警逻辑等）
+
+## 后续计划
+
+- 引入 FreeRTOS，将：
+  - DHT11 采集
+  - 串口输出
+  - LED 告警显示
+  - 按键输入处理
+  拆分为独立任务，实现基础的多任务协作示例。
